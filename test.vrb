@@ -1,0 +1,26 @@
+\frametitle{Generating the kernel imaging (4/5)}
+\begin{enumerate}
+\item We first have to build up RTEMS by the source tree.
+\item Under the source directory, type the command:
+\begin{verbatim}
+./bootstrap
+\end{verbatim}
+to run a self-sustaining process for getting the configure files processed, e.g., automake.
+\item Trigger the configure under the building directory:
+\begin{verbatim}
+../rtems-gpio/configure --target=arm-rtems4.11 \
+--enable-rtemsbsp=raspberrypi \
+--enable-tests=samples \
+--enable-posix \
+--prefix=$HOME/development/rtems/4.11
+\end{verbatim}
+\end{enumerate}
+
+%\begin{verbatim}
+%    ../rtems-gpio/configure --target=arm-rtems4.11 \
+%    --enable-rtemsbsp=raspberrypi \
+%    --enable-tests=samples \
+%    --enable-networking \
+%    --enable-posix \
+%    --prefix=$HOME/development/rtems/4.11
+%\end{verbatim}
