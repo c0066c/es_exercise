@@ -292,10 +292,11 @@ sudo screen /dev/ttyUSB0 115200
 \end{frame}
 
 \begin{frame}
-\frametitle{Exercises}
+\frametitle{Exercises (10 points)}
 \begin{enumerate}
-\item Please follow the tutorial and install RTEMS on your computer. Then upload the generated kernel on Raspberry Pi to execute. Please ensure that how to compile and program the executable example.
-\item Implement the Rate Monotonic example in p.10 and display the corresponding behaviours on the debug terminal.
+\item Please follow the tutorial and install RTEMS on your computer. Then upload the generated kernel on Raspberry Pi to execute. Please ensure that how to compile and program the executable example. (3 points)
+\item Implement the example in p.10 and display the corresponding behaviours on the debug terminal. Please note, you have to use rtems\_clock\_get\_ticks\_per\_second() "properly" to mimic the execution time. (7 points) 
+\item Hint:printf(), rtems\_clock\_get\_ticks\_per\_second().
 \end{enumerate}
 \end{frame}
 

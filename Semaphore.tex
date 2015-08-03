@@ -33,7 +33,7 @@
 \author{Kuan-Hsun Chen}
 
 \institute{LS 12, TU Dortmund}
-\date{27,07,2015}
+\date{04,08,2015}
 \hypersetup{
   pdfkeywords={},
   pdfsubject={},
@@ -114,17 +114,18 @@
 \end{frame}
 
 \begin{frame}
-\frametitle{Dig into the source code}
+\frametitle{Dig into the source code cpukit/}
 \begin{itemize}
+\item In fact Binary Semaphore in RTEMS is implemented by the structure of Mutex. (Binary Semaphore != Mutex)
 \item RTEMS interface:
 \begin{itemize}
-\item Semaphore obtain function is implemented into cpukit/rtems/src/semobtain.c
-\item Semaphore release function is implemented into cpukit/rtems/src/semrelease.c
+\item rtems\_semaphore\_obtain() is implemented into rtems/src/semobtain.c
+\item rtems\_semaphore\_release() is implemented into rtems/src/semrelease.c
 \end{itemize}
 \item Core functions:
 \begin{itemize}
-\item thread\_raise\_priority() in cpukit/score/src/coremutexseize.c
-\item 
+\item \_CORE\_mutex\_Seize\_interrupt\_blocking() in score/src/coremutexseize.c
+\item \_Thread\_Raise\_priority() in score/src/threadchangepriority.c
 \end{itemize}
 
 \end{itemize}
@@ -189,7 +190,7 @@
 \item Please build the source code and execute SEMAPHORE\_TEST example. Then, draw the diagram to check the system behaviours. (3 points)
 \item Remove the marked thread\_raise\_priority() in coremutexseize.c to recover PIP behaviours and draw the timing diagram. (2 points)
 \item Revise PIP to promote the priority of resource holder to the highest priority. What is the drawback? Please explain in the diagram. (5 points)
-\newline Hint:coremutexseize.c, 
+\newline Hint: coremutexseize.c, taskcreate.c, find . -type f | xargs fgrep "XXX" 
 \end{enumerate}
 \end{frame}
 
