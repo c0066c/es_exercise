@@ -18,6 +18,7 @@
 \mode<beamer>{\usetheme{TUD}}
 \usepackage{tikz}
 \usetikzlibrary{positioning,chains,arrows,shadows,fadings,shapes,backgrounds,snakes,matrix,patterns,plotmarks,trees,mindmap}
+\usepackage[absolute,overlay]{textpos}
 \usepackage{pgfpages} 
 \graphicspath{{./}{figs/}{figures/}{../logos/}{../cfigures/}{../RTS-2011/figs/}{}}
 \newcommand{\floor}[1]{\left\lfloor{#1}\right\rfloor}
@@ -63,239 +64,132 @@
 
 \begin{itemize}
 
-\item Introduction of RTEMS (Pages 3-4)
+\item Introduction of Semaphore in RTEMS
 \label{sec-1-1}%
 
-\item Installation of RTEMS on Host-Computer (Pages 5-7)
-\label{sec-1-2}%
+\item Priority Inversion
 
-\item Execute on Raspberry Pi (Pages 8-9)
-\label{sec-1-3}%
+\item Priority Inheritance Protocols
 
-\item Example of rate-monotonic multitasking (Page 10)
-\label{sec-1-3}%
-
-\item Exercises (Page 11)
-\label{sec-1-4}%
+\item Exercises 
 
 \end{itemize} % ends low level
 \end{frame}
 
 \begin{frame}
-\frametitle{What is RTEMS?}
+\frametitle{Semaphore in RTEMS}
 \label{sec-2}
 \begin{itemize}
 
-\item Real-Time Executive for Missile Systems? \red{X}
-\label{sec-2-1}%
-\item The Real-Time Executive for Multiprocessor Systems (RTEMS) is an open source Real Time Operating System (RTOS) that supports open standard application programming interfaces (API) such as POSIX. 
-\label{sec-2-2}%
-\item It is used in space flight, medical, networking and many more embedded devices using processor 
-architectures including ARM, PowerPC, Intel, Blackfin, MIPS, Microblaze and more. 
-\label{sec-2-3}%
-\item Commercial support is available from US and European companies, and free support comes via the active global community.
-\label{sec-2-4}%
-% Major decisions about RTEMS are made by the core developers in concert with the user community, guided by the Mission Statement. 
-%They strive to provide regular, high quality releases, which we want to work well on a wide range of embedded targets using cross development from a variety of hosts including GNU/Linux distributions, MS Windows, BSDs, Solaris, and Mac OS. They encourage everyone to contribute changes and feedback to RTEMS.
-
+\item Semaphore Attribute Set (Possible combinations)
+\begin{center}
+\includegraphics[width=0.9\textwidth]{semaphore_attributes}
+\end{center}
+\item \scriptsize Source from \url{https://docs.rtems.org/doc-current/share/rtems/html/c_user/Semaphore-Manager-Building-a-Semaphore-Attribute-Set.html}
 \end{itemize} % ends low level
+
 \end{frame}
 
 \begin{frame}
 \frametitle{Features of RTEMS}
 \begin{itemize}
-\item    The list of features:
+\item rtems\_semaphore\_create(name, count, attribute\_set, priority\_ceiling, rtems\_id *id)
+\item Some attributes:
 \begin{itemize}
 
-\item    multitasking capabilities
-\item    homogeneous and heterogeneous multiprocessor systems
-\item    \red{event-driven, priority-based, preemptive scheduling}
-\item    \red{optional rate monotonic scheduling}
-\item    intertask communication and synchronization
-\item    \red{priority inheritance}
-\item    responsive interrupt management
-\item    dynamic memory allocation
-\item    high level of user configurability
+\scriptsize{
+\item    RTEMS\_FIFO - tasks wait by FIFO (default)
+\item    RTEMS\_PRIORITY - tasks wait by priority
+\item    RTEMS\_COUNTING\_SEMAPHORE - no restriction on values (default)
+\item    RTEMS\_BINARY\_SEMAPHORE - restrict values to 0 and 1
+\item    RTEMS\_NO\_INHERIT\_PRIORITY - do not use priority inheritance (default)
+\item    RTEMS\_NO\_PRIORITY\_CEILING - do not use priority ceiling (default)
+\item    RTEMS\_LOCAL - local semaphore (default)
+\item ...
+}
 \end{itemize}
-
-
-
-\item Please check:\newline \url{https://docs.rtems.org/doxygen/cpukit/html/modules.html}
-\end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{How to install RTEMS? (1/5)}
-\begin{enumerate}
-
-\item First of all, we have to build up the cross-compiling tool chains on your host-computer.
-\begin{itemize}
-\item We have already prepared the environment for you to ease the complexity of installation.
-\item If you want to implement on somewhere, please adopt RTEMS Source Builder \url{ftp://ftp.rtems.org/pub/rtems/people/chrisj/source-builder/source-builder.html} to aid you building packages.
-\end{itemize}
-\item Then, check out the repository from Github:
-\begin{verbatim}
-git clone https://github.com/c0066c/rtems-gpio.git
-\end{verbatim}
-\item Now you should have the source tree in your destination.
-\end{enumerate}
-\end{frame}
-
-\begin{frame}
-\frametitle{Look into the source tree (2/5)}
-%  \begin{columns}
-%    \column{0.6\textwidth}
-%    \begin{myalterblock}{A few days into the mission.....}
-%      Not long after Pathfinder started gathering meteorological data,
-%      the spacecraft began experiencing total system resets, each
-%      resulting in losses of data.
-%    \end{myalterblock}
-%    \column{1\textwidth}
-%    \begin{center}
-%      \includegraphics[width=\textwidth]{sourcetree}
-%    \end{center}
-%  \end{columns}
-    \begin{center}
-      \includegraphics[width=\textwidth]{sourcetree}
-    \end{center}
-\begin{itemize}
-\item Some important directories to us:
-\begin{itemize}
-\item cpukit/score/src: Provides services for all APIs (SuperCore).
-\item cpukit/rtems/src: Provides RTEMS Classic APIs.
-\item testsuites: Some testing programs released by RTEMS.
-\item Please check the doxygen generated documentation:\newline \url{https://docs.rtems.org/doxygen/cpukit/html/modules.html}
-\end{itemize}
+\item For example:{ \scriptsize{RTEMS\_BINARY\_SEMAPHORE | RTEMS\_FIFO | RTEMS\_NO\_INHERIT\_PRIORITY | RTEMS\_NO\_PRIORITY\_CEILING | RTEMS\_LOCAL}}
+\item Count should be larger than 1 for the normal usage of binary/counting semaphore. 
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Hello world! (3/5)}
+\frametitle{Dig into the source code}
 \begin{itemize}
-\item The source code of hello world can be found in ./testsuites/samples/hello/init.c
-\item Init() is similar as the main() in the standard C program.
-\item In general, the init task is used to fork the multi tasks and set up the environment. Then call rtems\_task\_delete(RTEMS\_SELF) to terminate itself after initializing the system.
-\item We recommend you to check the example of "Ticker" and see how to do the multitasking.
-\item C User's Guide\newline \url{http://www.infres.enst.fr/~domas/astre/rtems_C_user.pdf}
+\item RTEMS interface:
+\begin{itemize}
+\item Semaphore obtain function is implemented into cpukit/rtems/src/semobtain.c
+\item Semaphore release function is implemented into cpukit/rtems/src/semrelease.c
+\end{itemize}
+\item Core functions:
+\begin{itemize}
+\item thread\_raise\_priority() in cpukit/score/src/coremutexseize.c
+\item 
+\end{itemize}
 
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]
-\frametitle{Generating the kernel imaging (4/5)}
-\begin{enumerate}
-\item Under the source directory, type the command:
-\begin{verbatim}
-./bootstrap 
-\end{verbatim}  
-to run a self-sustaining process getting the configure files.
-\item Trigger the configure under the building directory:
-\begin{verbatim}
-../rtems-gpio/configure --target=arm-rtems4.11 \
---enable-rtemsbsp=raspberrypi \
---enable-tests=samples \
---enable-posix \
---prefix=$HOME/development/rtems/4.11
-\end{verbatim}   
-and 
-\begin{verbatim}
-make install
-\end{verbatim}   
-\item Find up the executable file under "arm-rtems4.11/c/raspberrypi/testsuites/samples/hello"
-\begin{verbatim}
-make install
-arm-rtems4.11-objcopy -Obinary hello.exe kernel.img
-\end{verbatim}  
-\end{enumerate}
-\end{frame}
-\begin{frame}[fragile]
-\frametitle{Upload and execute the example on Raspberry Pi (5/5)}
-\begin{enumerate}
-\item Connect Raspberry Pi with the host computer by USBtoTTL. Please note, the pin must be connected properly, i.e., GWD, TXD, RXD, otherwise the board might be damaged.
-\begin{center}
-\includegraphics[width=0.3\textwidth]{gpio-led}
-\end{center}
-\item Copy kernel.img to "/sdcard/boot"
-\item Before the power on, insert the SD-card. Please do not remove the SD-card when the power on!!
-\item Open the terminal and use the following command to setup the serial debug terminal:
-\begin{verbatim}
-sudo screen /dev/ttyUSB0 115200
-\end{verbatim}   
-
-\end{enumerate}
-\end{frame}
-
 \begin{frame}
-\frametitle{\large Rate-Monotonic Scheduling Example}
+  \frametitle{Priority Inversion}
+  
+    A higher priority job
+    is \emph{blocked} by a lower-priority job.
 
-  Priority Definition: A task with a smaller period has higher
-  priority, in which ties are broken arbitrarily.
-  In RTEMS, the priorities of tasks need be defined when you create the tasks.
-
-  \vskip 0.2in
-  Example Schedule: $\tau_1 = (1,6,6)$, $\tau_2 = (2,8,8), \tau_3 = (4,12,12)$. [$(C_i, T_i, D_i)$]
+    \begin{itemize}
+    \item Unavoidable when there are critical sections
+    \end{itemize}
 
   \begin{center}
-    \begin{tikzpicture}[x=.4cm,font=\sffamily]
-      \begin{scope}[shift={(0,2.5)}]      
-      \draw[->, very thick](0,0) -- (24, 0);
-      \foreach \x in {0,2,...,24}
-      \draw (\x,1pt) -- (\x,-3pt) 
-      node[anchor=north] {\scriptsize \x};
-      \draw(0,0.25)node[anchor=east]{$\tau_1$};
-      
-      % \foreach \x in {0,8,16,24}
-      % \draw[<-,line width=0.8mm, red](\x,0) -- (\x,1);
-
-      \node[task1,minimum height=0.7cm, minimum width=0.4cm, anchor=south west] at (0, 0){};
-      \draw(0.5,0) node[anchor=south]{ $\tau_1$};
-      \node[task1,minimum height=0.7cm, minimum width=0.4cm, anchor=south west] at (6, 0){};
-      \draw(6.5,0) node[anchor=south]{ $\tau_1$};
-      \node[task1,minimum height=0.7cm, minimum width=0.4cm, anchor=south west] at (12, 0){};
-      \draw(12.5,0) node[anchor=south]{ $\tau_1$};
-      \node[task1,minimum height=0.7cm, minimum width=0.4cm, anchor=south west] at (18, 0){};
-      \draw(18.5,0) node[anchor=south]{ $\tau_1$};
-      \foreach \x in {0,6,12,18,24}
-      \draw[<->,line width=0.5mm, blue](\x,0) -- (\x,0.8);
-      \end{scope}
-      \begin{scope}[shift={(0,1.25)}]      
-      \draw[->, very thick](0,0) -- (24, 0);
-      \foreach \x in {0,2,...,24}
-      \draw (\x,1pt) -- (\x,-3pt) 
-      node[anchor=north] {\scriptsize \x};
-      \draw(0,0.25)node[anchor=east]{$\tau_2$};
-      
-      \node[task2,minimum height=0.7cm, minimum width=0.8cm, anchor=south west] at (1, 0){$\tau_2$};
-      \node[task2,minimum height=0.7cm, minimum width=0.8cm, anchor=south west] at (8, 0){$\tau_2$};
-      \node[task2,minimum height=0.7cm, minimum width=0.8cm, anchor=south west] at (16, 0){$\tau_2$};
-      \foreach \x in {0,8,16,24}
-      \draw[<->,line width=0.5mm, blue](\x,0) -- (\x,0.8);
-      \end{scope}
-      \draw[->, very thick](0,0) -- (24, 0);
-      \foreach \x in {0,2,...,24}
-      \draw (\x,1pt) -- (\x,-3pt) 
-      node[anchor=north] {\scriptsize \x};
-      \draw(0,0.25)node[anchor=east]{$\tau_3$};
-      
-      \node[task3,minimum height=0.7cm, minimum width=1.2cm, anchor=south west] at (3, 0){$\tau_3$};
-      \node[task3,minimum height=0.7cm, minimum width=0.4cm, anchor=south west] at (7, 0){};
-      \draw(7.5,0) node[anchor=south]{ $\tau_3$};
-      \node[task3,minimum height=0.7cm, minimum width=1.2cm, anchor=south west] at (13, 0){$\tau_3$};
-      \node[task3,minimum height=0.7cm, minimum width=0.4cm, anchor=south west] at (19, 0){};
-      \draw(19.5,0) node[anchor=south]{ $\tau_3$};
-      \foreach \x in {0,12,24}
-      \draw[<->,line width=0.5mm, blue](\x,0) -- (\x,0.8);
-    
-     \end{tikzpicture}
+  \begin{tikzpicture}[font=\sffamily]
+    \begin{scope}[shift={(0,3.2)}]
+      \draw[task3](0.5,0) rectangle (1.5, 0.3) node[anchor=west]{critical section};
+      \draw[task5](0.5,0.5) rectangle (1.5, 0.8) node[anchor=west]{normal execution};
+    \end{scope}
+    \draw[->, thick] (2,0) node[anchor=east]{$J_2$} -- (10,0);
+    \draw[->](2,0) -- (10, 0);
+    \draw[->](2.5,0) -- (2.5, 1);
+    \draw[task5](2.5,0) rectangle (3.5, 0.5);
+    \draw[task3](3.5,0) rectangle (4, 0.5);
+    \draw[task3](5,0) rectangle (7, 0.5);
+    \draw[task5](8.5,0) rectangle (9.5, 0.5);
+    \draw[->, thick] (2,1.5) node[anchor=east]{$J_1$} -- (10,1.5);
+    \draw[->](4,1.5) -- (4,2.5);
+    \draw[task5](4,1.5) rectangle (5, 2);
+    \draw[task3](7,1.5) rectangle (7.5, 2);
+    \draw[task5](7.5,1.5) rectangle (8.5, 2);
+    \draw[<->](5,2.5) -- (6, 2.5) node[anchor=south]{$J_1$ is blocked} -- (7, 2.5);
+  \end{tikzpicture}
   \end{center}
-  
+
 \end{frame}
 
 \begin{frame}
-\frametitle{Exercises}
+  \frametitle{Priority Inheritance Protocol (PIP)}
+
+  When a lower-priority job $J_j$ blocks a higher-priority job, the
+  priority of job $J_j$ is \emph{promoted} to the priority level of
+  highest-priority job that job $J_j$ blocks.
+
+  \vskip 0.2in
+    For example, if the priority order is $J_1 > J_2 > J_3 > J_4 > J_5$,
+    \begin{itemize}
+    \item When job $J_4$ blocks jobs $J_2$ and $J_3$, the priority of
+      $J_4$ is promoted to the priority level of $J_2$.
+    \item When job $J_5$ blocks jobs $J_1$ and $J_3$, the priority of
+      $J_5$ is promoted to the priority level of $J_1$.
+    \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Exercises (10 points)}
 \begin{enumerate}
-\item Please follow the tutorial and install RTEMS on your computer. Then upload the generated kernel on Raspberry Pi to execute. Please ensure that how to compile and program the executable example.
-\item Implement the Rate Monotonic example in p.10 and display the corresponding behaviours on the debug terminal.
+\item Please build the source code and execute SEMAPHORE\_TEST example. Then, draw the diagram to check the system behaviours. (3 points)
+\item Remove the marked thread\_raise\_priority() in coremutexseize.c to recover PIP behaviours and draw the timing diagram. (2 points)
+\item Revise PIP to promote the priority of resource holder to the highest priority. What is the drawback? Please explain in the diagram. (5 points)
+\newline Hint:coremutexseize.c, 
 \end{enumerate}
 \end{frame}
 

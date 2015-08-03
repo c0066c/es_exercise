@@ -1,14 +1,25 @@
-\frametitle{Upload and execute the example on Raspberry Pi (5/5)}
+\frametitle{Generating the kernel imaging (4/5)}
 \begin{enumerate}
-\item Connect Raspberry Pi with the host computer by USBtoTTL. Please note, the pin must be connected properly, i.e., GWD, TXD, RXD, otherwise the board might be damaged.
-\begin{center}
-\includegraphics[width=0.3\textwidth]{gpio-led}
-\end{center}
-\item Copy kernel.img to "/sdcard/boot"
-\item Before the power on, insert the SD-card. Please do not remove the SD-card when the power on!!
-\item Open the terminal and use the following command to setup the serial debug terminal:
+\item Under the source directory, type the command:
 \begin{verbatim}
-sudo screen /dev/ttyUSB0 115200
+./bootstrap
 \end{verbatim}
-
+to run a self-sustaining process getting the configure files.
+\item Trigger the configure under the building directory:
+\begin{verbatim}
+../rtems-gpio/configure --target=arm-rtems4.11 \
+--enable-rtemsbsp=raspberrypi \
+--enable-tests=samples \
+--enable-posix \
+--prefix=$HOME/development/rtems/4.11
+\end{verbatim}
+and
+\begin{verbatim}
+make install
+\end{verbatim}
+\item Find up the executable file under "arm-rtems4.11/c/raspberrypi/testsuites/samples/hello"
+\begin{verbatim}
+make install
+arm-rtems4.11-objcopy -Obinary hello.exe kernel.img
+\end{verbatim}
 \end{enumerate}
