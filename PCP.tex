@@ -67,7 +67,7 @@
 
 \item Introduction of PCP
 
-\item PCP implementation
+\item PCP theory / implementation
 
 \item Exercises
 
@@ -159,10 +159,42 @@ Now we have PIP to mitigate the priority inversion and prevent the starvation of
 \end{frame}
 
 \begin{frame}
+  \frametitle{PCP Implementation}
+  \footnotesize
+  \begin{enumerate}\small
+  \item Scheduling Rule
+    \begin{itemize}
+    \item Every job $J$ is scheduled based on the
+      current priority $\pi(t, J)$.
+    \end{itemize}
+  \item Allocation Rule: Whenever a job $J$ requests a resource R at
+    time $t$, one of the following two conditions occurs:
+    \begin{itemize}
+    \item $R$ is held by another job and $J$ becomes blocked.
+    \item $R$ is free:
+      \begin{itemize}
+      \item If $J$'s priority $\pi(t, J)$ equals the semaphore ceiling $\Pi(R)$, $R$ is allocated to $J$ directly.
+      \item If priority $\pi(t, J)$ is lower than $\Pi(R)$, $R$ is allocated to
+        $J$. Moreover, priority $\pi(t, J)$ needs to be raised to ceiling $\Pi(R)$.
+      \item If priority $\pi(t, J)$ is larger than $\Pi(R)$. (Don't care in normal.)
+      \end{itemize}
+    \end{itemize}
+    \item When releasing the semaphore, $J$ returns to its priority $\pi(t', J)$, then further check if another job $J_l$ was waiting for this semaphore. If so, transfer the semaphore to locked $J_l$ and raise it's priority to the semaphore priority ceiling $\Pi(R)$.
+%  \item Priority-inheritance Rule: When $J$ becomes blocked, the job
+%    $J_l$ that blocks $J$ inherits the current priority $\pi(t, J)$ of J.
+%    $J_l$ executes at its inherited priority until it releases every
+%    resource whose priority ceiling is $\geq \pi(t, J)$ (or until it
+%    inherits an even higher priority); at that time, the priority of
+%    $J_l$ returns to its priority $\pi(t', J_l)$ at the time $t'$ when it was
+%    granted the resources.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
 \frametitle{Exercises (10 points)}
 \begin{enumerate}
 \item Please activate PIP for DOUBLE\_SEMAPHORE example and see whether it does work. Draw the diagram. (3 points)
-\item Please complete the code of PCP to get rid of the deadlock due to the resource competition. (7 points)
+\item Please fulfill the missed code of current PCP to get rid of the deadlock due to the resource competition. (7 points)
 \end{enumerate}
 \begin{columns}
     \column{\textwidth}
