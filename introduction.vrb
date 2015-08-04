@@ -2,7 +2,7 @@
 \begin{enumerate}
 \item Connect Raspberry Pi with the host computer by USBtoTTL. Please note, the pin must be connected properly, i.e., GWD, TXD, RXD, otherwise the board might be damaged.
 \begin{center}
-\includegraphics[width=0.3\textwidth]{gpio-led}
+\includegraphics[width=0.3\textwidth]{figures/gpio-led}
 \end{center}
 \item Copy kernel.img to "/sdcard/boot"
 \item Before the power on, insert the SD-card. Please do not remove the SD-card when the power on!!

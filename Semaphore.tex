@@ -188,11 +188,32 @@
 \begin{frame}
 \frametitle{Exercises (10 points)}
 \begin{enumerate}
-\item Please build the source code and execute SEMAPHORE\_TEST example. Then, draw the diagram to check the system behaviours. (3 points)
-\item Remove the marked thread\_raise\_priority() in coremutexseize.c to recover PIP behaviours and draw the timing diagram. (2 points)
-\item Revise PIP to promote the priority of resource holder to the highest priority. What is the drawback? Please explain in the diagram. (5 points)
+\item Please build the source code and execute ONE\_SEMAPHORE example. Draw the diagram. (2 points) 
+\item Remove the marked thread\_raise\_priority() in coremutexseize.c to recover PIP behaviours. Then, draw the diagrams to check the system behaviours. (3 points) 
+\item Revise PIP to promote the priority of resource holder to the highest priority. What is the drawback? Please explain by the diagram of ONE\_SEMAPHORE example. (5 points)
 \newline Hint: coremutexseize.c, taskcreate.c, grep -r "XXX" *
 \end{enumerate}
+\begin{columns}
+    \column{\textwidth}
+  \begin{table}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+      \hline
+     Tasks & Period & Critical Section & Arrive Time\\
+     \hline
+     $\tau_1$ & $8$ & $0$ & $4$ \\
+     \hline
+     $\tau_2$ & $16$ & $1$ & $2$ \\
+     \hline
+     $\tau_3$ & $40$ & $0$ & $5$ \\
+     \hline
+     $\tau_4$ & $50$ & $10$ & $0$ \\
+     \hline
+    \end{tabular}
+  \end{table}
+    %\column{0.35\textwidth}
+  \end{columns}
+
 \end{frame}
 
 \end{document}
