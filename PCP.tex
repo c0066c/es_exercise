@@ -160,6 +160,7 @@ Now we have PIP to mitigate the priority inversion and prevent the starvation of
 
 \begin{frame}
   \frametitle{PCP Implementation}
+  \label{sec-1-1}%
   \footnotesize
   \begin{enumerate}\small
   \item Scheduling Rule
@@ -176,7 +177,7 @@ Now we have PIP to mitigate the priority inversion and prevent the starvation of
       \item If $J$'s priority $\pi(t, J)$ equals the semaphore ceiling $\Pi(R)$, $R$ is allocated to $J$ directly.
       \item If priority $\pi(t, J)$ is lower than $\Pi(R)$, $R$ is allocated to
         $J$. Moreover, priority $\pi(t, J)$ needs to be raised to ceiling $\Pi(R)$.
-      \item If priority $\pi(t, J)$ is larger than $\Pi(R)$. (Don't care in normal.)
+      \item If priority $\pi(t, J)$ is larger than $\Pi(R)$. (Won't happen in normal.)
       \end{itemize}
     \end{itemize}
     \item When releasing the semaphore, $J$ returns to its priority $\pi(t', J)$, then further check if another job $J_l$ was waiting for this semaphore. If so, transfer the semaphore to locked $J_l$ and raise it's priority to the semaphore priority ceiling $\Pi(R)$.
@@ -189,12 +190,15 @@ Now we have PIP to mitigate the priority inversion and prevent the starvation of
 %    granted the resources.
   \end{enumerate}
 \end{frame}
-
+\begin{frame}
+\frametitle{Overview}
+\end{frame}
 \begin{frame}
 \frametitle{Exercises (10 points)}
 \begin{enumerate}
 \item Please activate PIP for DOUBLE\_SEMAPHORE example and see whether it does work. Draw the diagram. (3 points)
-\item Please fulfill the missed code of current PCP to get rid of the deadlock due to the resource competition. (7 points)
+\item Please fulfil the missed code of PCP implementation to get rid of the deadlock due to the resource competition. The relevant files are: \red{coremuteximpl.h, coremutexsurrender.c} (7 points)\newline
+Hints: Please follow slide~\ref{sec-1-1} and 7 to trace the code. 
 \end{enumerate}
 \begin{columns}
     \column{\textwidth}
